@@ -44,6 +44,17 @@ python benchmark.py
 | 3 | Cosine Similarity (100k docs × dim=768) | 1,035 ms | **96,586 docs/s** |
 | 4 | MLP Forward Pass (batch=512, 50 runs) | 1.00 ms/batch | **511,861 samples/s** |
 
+## Resultados — ThinkPad T14 Gen 2 (Ubuntu)
+
+> Sistema: Linux x86_64 · Python 3.12.3 · PyTorch 2.10.0+cu128 · Backend: CPU
+
+| # | Teste | Resultado | Métrica |
+|---|-------|-----------|---------|
+| 1 | Matrix Multiplication (4096×4096, 10 runs) | 437.11 ms/run | **314.4 GFLOP/s** |
+| 2 | Parallel Reduction (50M floats) | 4.87 ms | **41.1 GB/s** |
+| 3 | Cosine Similarity (100k docs × dim=768) | 8.96 ms | **11,160,603 docs/s** |
+| 4 | MLP Forward Pass (batch=512, 50 runs) | 5.82 ms/batch | **88,041 samples/s** |
+
 ## Por que isso importa para CUDA?
 
 A API PyTorch é **idêntica** para CPU, MPS e CUDA.  
