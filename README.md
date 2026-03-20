@@ -66,21 +66,33 @@ python benchmark.py
 | 3 | Cosine Similarity (100k docs × dim=768) | 122.23 ms | **818,104 docs/s** |
 | 4 | MLP Forward Pass (batch=512, 50 runs) | 0.29 ms/batch | **1,745,816 samples/s** |
 
+## Resultados — ThinkPad T14 Gen 2 (RTX 3060)
+
+> Sistema: Linux x86_64 · Python 3.12.3 · PyTorch 2.10.0+cu128 · Backend: NVIDIA GeForce RTX 3060
+
+| # | Teste | Resultado | Métrica |
+|---|-------|-----------|---------|
+| 1 | Matrix Multiplication (4096×4096, 10 runs) | 19.38 ms/run | **7,091.8 GFLOP/s** |
+| 2 | Parallel Reduction (50M floats) | 1.16 ms | **171.8 GB/s** |
+| 3 | Cosine Similarity (100k docs × dim=768) | 24.59 ms | **4,066,094 docs/s** |
+| 4 | MLP Forward Pass (batch=512, 50 runs) | 0.25 ms/batch | **2,083,520 samples/s** |
+
 ## Comparativo de Resultados
 
-| Teste | MacBook Air M4 (MPS) | ThinkPad T14 (CPU) | Google Colab (T4) | Melhor |
-|-------|---------------------|--------------------|--------------------|--------|
-| **Matrix Multiplication** | 2,146.7 GFLOP/s | 314.4 GFLOP/s | 3,707.4 GFLOP/s | T4 (1.7× M4) |
-| **Parallel Reduction** | 43.4 GB/s | 41.1 GB/s | 131.4 GB/s | T4 (3× M4) |
-| **Cosine Similarity** | 96,586 docs/s | 11,160,603 docs/s | 818,104 docs/s | CPU (115× M4) |
-| **MLP Forward Pass** | 511,861 samples/s | 88,041 samples/s | 1,745,816 samples/s | T4 (3.4× M4) |
+| Teste | MacBook Air M4 (MPS) | ThinkPad T14 (CPU) | Google Colab (T4) | ThinkPad T14 (RTX 3060) | Melhor |
+|-------|---------------------|--------------------|--------------------|--------------------------|--------|
+| **Matrix Multiplication** | 2,146.7 GFLOP/s | 314.4 GFLOP/s | 3,707.4 GFLOP/s | 7,091.8 GFLOP/s | **RTX 3060 (3.3× M4)** |
+| **Parallel Reduction** | 43.4 GB/s | 41.1 GB/s | 131.4 GB/s | 171.8 GB/s | **RTX 3060 (4× M4)** |
+| **Cosine Similarity** | 96,586 docs/s | 11,160,603 docs/s | 818,104 docs/s | 4,066,094 docs/s | CPU (115× M4) |
+| **MLP Forward Pass** | 511,861 samples/s | 88,041 samples/s | 1,745,816 samples/s | 2,083,520 samples/s | **RTX 3060 (4× M4)** |
 
 ### Observações
 
-- **T4 domina em compute puro**: matmul, redução e inferência — é para isso que GPUs NVIDIA são otimizadas.
-- **CPU surpreende em cosine similarity**: o ThinkPad T14 teve throughput 115× maior que o M4 e 13× maior que a T4 nesse teste. Isso acontece porque a operação é uma única multiplicação matriz-vetor (`corpus @ query.T`) seguida de um `topk` — para esse padrão de acesso sequencial à memória, as instruções AVX/SSE do x86 são extremamente eficientes, enquanto a GPU sofre com o overhead de lançamento de kernel e transferência de dados para uma operação relativamente pequena.
+- **RTX 3060 domina em compute puro**: supera a T4 em todos os benchmarks de GPU — 7,091 GFLOP/s vs 3,707 GFLOP/s na multiplicação de matrizes.
+- **T4 vs RTX 3060**: a RTX 3060 tem quase o dobro da performance da T4 em matmul e bandwidth, mostrando a evolução das arquiteturas NVIDIA (Ampere vs Turing).
+- **CPU surpreende em cosine similarity**: o ThinkPad T14 (CPU) teve throughput 115× maior que o M4 e muito acima das GPUs nesse teste. A operação é uma única multiplicação matriz-vetor seguida de `topk` — para esse padrão, as instruções AVX/SSE do x86 são extremamente eficientes, enquanto a GPU sofre com overhead de lançamento de kernel.
 - **M4 é um bom meio-termo para desenvolvimento**: performance sólida em matmul (2,146 GFLOP/s) e inferência (511k samples/s), com consumo de energia muito inferior.
-- **A portabilidade do PyTorch se confirma**: o mesmo código rodou nos 3 ambientes sem nenhuma alteração.
+- **A portabilidade do PyTorch se confirma**: o mesmo código rodou nos 4 ambientes sem nenhuma alteração.
 
 ## Por que isso importa para CUDA?
 
