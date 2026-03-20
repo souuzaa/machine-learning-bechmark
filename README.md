@@ -66,7 +66,7 @@ python benchmark.py
 | 3 | Cosine Similarity (100k docs × dim=768) | 122.23 ms | **818,104 docs/s** |
 | 4 | MLP Forward Pass (batch=512, 50 runs) | 0.29 ms/batch | **1,745,816 samples/s** |
 
-## Resultados — ThinkPad T14 Gen 2 (RTX 3060)
+## Resultados — Server (RTX 3060)
 
 > Sistema: Linux x86_64 · Python 3.12.3 · PyTorch 2.10.0+cu128 · Backend: NVIDIA GeForce RTX 3060
 
@@ -79,7 +79,7 @@ python benchmark.py
 
 ## Comparativo de Resultados
 
-| Teste | MacBook Air M4 (MPS) | ThinkPad T14 (CPU) | Google Colab (T4) | ThinkPad T14 (RTX 3060) | Melhor |
+| Teste | MacBook Air M4 (MPS) | ThinkPad T14 (CPU) | Google Colab (T4) | Server (RTX 3060) | Melhor |
 |-------|---------------------|--------------------|--------------------|--------------------------|--------|
 | **Matrix Multiplication** | 2,146.7 GFLOP/s | 314.4 GFLOP/s | 3,707.4 GFLOP/s | 7,091.8 GFLOP/s | **RTX 3060 (3.3× M4)** |
 | **Parallel Reduction** | 43.4 GB/s | 41.1 GB/s | 131.4 GB/s | 171.8 GB/s | **RTX 3060 (4× M4)** |
